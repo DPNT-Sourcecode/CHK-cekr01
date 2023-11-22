@@ -47,9 +47,8 @@ class Checkout
   end
 
   private
-
-  def calculate_item_price(count, price_info, item) end
 end
+
 
 
 
