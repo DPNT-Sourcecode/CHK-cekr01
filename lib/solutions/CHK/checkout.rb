@@ -1,6 +1,4 @@
-# noinspection RubyUnusedLocalVariable
 class Checkout
-
   def initialize
     @price_table = {
       'A' => { price: 50, special_offer: { quantity: 3, offer_price: 130 } },
@@ -37,34 +35,21 @@ class Checkout
 
     if price_info[:special_offer]
       special_offer = price_info[:special_offer]
+      special_price_quantity = count / special_offer[:quantity]
+      regular_price_quantity = count % special_offer[:quantity]
+
+      total_price += special_price_quantity * special_offer[:offer_price].to_i
+      total_price += regular_price_quantity * price_info[:price]
+
       if special_offer[:free_item]
-        # This represents the number of times the special offer is applied.
-        special_price_quantity = count / special_offer[:quantity]
-        # This represents the remaining items that are not covered by the special offer.
-        regular_price_quantity = count % special_offer[:quantity]
         free_item_count = [item_counts[special_offer[:free_item]], special_price_quantity].min
-
-        total_price += (special_price_quantity * special_offer.dig(:offer_price).to_i || 0)
-        total_price += (regular_price_quantity * price_info.dig(:price))
-        total_price -= (free_item_count.to_i * @price_table[special_offer.dig(:free_item)].dig(:price))
-      else
-        # This represents the number of times the special offer is applied.
-        special_price_quantity = count / special_offer[:quantity]
-
-        # This represents the remaining items that are not covered by the special offer.
-        regular_price_quantity = count % special_offer[:quantity]
-        (special_price_quantity * special_offer[:offer_price]) + (regular_price_quantity * price_info[:price])
+        total_price -= free_item_count * @price_table[special_offer[:free_item]][:price]
       end
     else
-      count * price_info[:price]
+      total_price += count * price_info[:price]
     end
+
+    total_price
   end
+
 end
-
-
-
-
-
-
-
-
