@@ -65,7 +65,6 @@ class Checkout
       eligible_items = count - count % offer[:quantity]
       free_items = [count / offer[:quantity], eligible_items / offer[:quantity]].min
       remaining_items = count - eligible_items
-
       return free_items * @price_table[offer[:free_item]][:price] + remaining_items * @price_table[item][:price]
     end
 
@@ -75,6 +74,7 @@ class Checkout
     offer_batches * offer[:offer_price] + remaining_items * @price_table[item][:price]
   end
 end
+
 
 
 
