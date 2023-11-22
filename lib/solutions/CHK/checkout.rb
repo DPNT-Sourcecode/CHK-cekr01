@@ -8,6 +8,12 @@ class Checkout
       'E' => { price: 40 }
     }
 
+    # The discount types are ordered by priority (highest priority first)
+    @discount_types = {
+      offer_price: { priority: 0 },
+      free_item: { priority: 1 },
+    }
+
     @discount_table = {
       'A' => { type: :offer_price, quantity: 3, price: 130 },
       'B' => { type: :offer_price, quantity: 2, price: 45 },
@@ -37,30 +43,30 @@ class Checkout
   def calculate_item_price(count, item, item_counts)
     return -1 if count < 0
 
-    case @discount_table.dig(item, :type)
-    when :offer_price
-      calculate_offer_price(count, item)
-    when :free_item
-      calculate_free_item_price(count, item, item_counts)
-    else
-      count * @price_table[item][:price]
+
+    price = @price_table[item][:price]
+
+    if @discount_table.key?(item)
+      discount_info = @discount_table[item]
+      case @discount_types[discount_info[:type]][:priority]
+      when 0 # offer_price
+        price = calculate_offer_price(count, price, discount_info)
+      when 1 # free_item
+        price = calculate_free_item_price(count, price, discount_info, item_counts)
+      end
     end
+
+    price * count
   end
 
-  def calculate_offer_price(count, item)
-    offer_quantity = @discount_table[item][:quantity]
-    offer_price = @discount_table[item][:price]
-
-    # Calculate the total price considering the offer price
-    (count / offer_quantity) * offer_price + (count % offer_quantity) * @price_table[item][:price]
+  def calculate_offer_price(count, price, discount_info)
+    (count / discount_info[:quantity]) * discount_info[:price] + (count % discount_info[:quantity]) * price
   end
 
-  def calculate_free_item_price(count, item, item_counts)
-    free_item = @discount_table[item][:free_item]
-    free_item_count = item_counts[free_item]
-
-    # Calculate the total price considering the free item discount
-    count * @price_table[item][:price] - (free_item_count / @discount_table[item][:quantity]) * @price_table[free_item][:price]
+  def calculate_free_item_price(count, price, discount_info, item_counts)
+    free_item_count = [count / discount_info[:quantity], item_counts[discount_info[:free_item]]].min
+    price * (count - free_item_count) + @price_table[discount_info[:free_item]][:price] * free_item_count
   end
 end
+
 
