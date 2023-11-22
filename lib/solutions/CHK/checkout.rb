@@ -25,20 +25,26 @@ class Checkout
     item_counts.each do |item, count|
       total_price += calculate_item_price(item, count)
     end
+
+    total_price
   end
 
   private
 
   def calculate_item_price(item, count)
+    puts "Calculating price for #{item} x #{count}"
     price_info = @price_table[item]
     special_offers = price_info[:special_offers]
     special_offer = price_info[:special_offer]
 
     if special_offers
+      puts "Applying multi-price offers"
       total_price = apply_multi_price_offers(item, count, special_offers)
     elsif special_offer
+      puts "Applying special offer"
       total_price = apply_special_offer(item, count, special_offer)
     else
+      puts "Applying normal price"
       total_price = count * price_info[:price]
     end
 
@@ -53,6 +59,7 @@ class Checkout
       remaining_items = count % offer[:quantity]
 
       total_price += offer_batches * offer[:offer_price]
+      puts "Offer: #{offer[:quantity]} for #{offer[:offer_price]} - #{offer_batches} batches of #{offer[:quantity]} - #{total_price}"
       count = remaining_items
     end
 
@@ -72,4 +79,5 @@ class Checkout
   end
 
 end
+
 
