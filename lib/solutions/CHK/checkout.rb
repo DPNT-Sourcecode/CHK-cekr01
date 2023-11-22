@@ -12,7 +12,7 @@ class Checkout
   end
 
   def checkout(skus)
-    -1 if skus.nil?
+    return -1 if skus.nil?
 
     item_counts = Hash.new(0)
     skus.each_char { |item| item_counts[item] += 1 }
@@ -47,7 +47,7 @@ class Checkout
         free_item_count = [item_counts[special_offer[:free_item]], special_price_quantity].min
         total_price += (special_price_quantity * special_offer[:offer_price]) +
           (regular_price_quantity * price_info[:price]) -
-          (free_item_count * @price_table[special_offer[:free_item]][:price])
+          (free_item_count.to_i * @price_table[special_offer[:free_item]][:price])
       else
         # This represents the number of times the special offer is applied.
         special_price_quantity = count / special_offer[:quantity]
@@ -61,3 +61,4 @@ class Checkout
     end
   end
 end
+
