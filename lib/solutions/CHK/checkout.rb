@@ -59,11 +59,10 @@ class Checkout
       remaining_items = count % offer[:quantity]
 
       total_price += offer_batches * offer[:offer_price]
-      puts "Offer: #{offer[:quantity]} for #{offer[:offer_price]} - #{offer_batches} batches of #{offer[:quantity]} - #{total_price}"
       count = remaining_items
     end
 
-    total_price
+    total_price + count * @price_table[item][:price]
   end
 
   def apply_special_offer(item, count, offer)
@@ -79,5 +78,6 @@ class Checkout
   end
 
 end
+
 
 
