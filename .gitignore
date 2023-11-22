@@ -1,0 +1,23 @@
+# ~~~~~~~~~ Global ~~~~~~~~~
+
+# Ignore all dot folders
+.*/
+
+# ~~~~~~~~~ Language specific ~~~~~~~~~
+pkg/
+out/
+Gemfile.lock
+
+# ~~~~~~~~~ IDE specific ~~~~~~~~~
+
+# Idea
+*.iml
+
+# ~~~~~~~~~ Accelerate ~~~~~~~~~
+challenges/
+config/
+coverage/
+coverage.tdl
+jre/
+record/
+
