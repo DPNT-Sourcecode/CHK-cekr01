@@ -76,6 +76,11 @@ class Checkout
 
     offer_batches * offer[:offer_price] + remaining_items * @price_table[item][:price]
   end
+
+  # Helper method to get the count of each item in the checkout
+  def item_counts
+    @item_counts ||= Hash.new(0)
+  end
 end
 
 
