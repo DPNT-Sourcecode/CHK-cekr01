@@ -25,8 +25,9 @@ class ClientTest < Minitest::Test
     assert_equal 80, checkout.checkout("EEB")
 
     # Test case 4: Illegal input
-    assert_equal -1, checkout.checkout("EFG")
+    assert_equal -1, checkout.checkout("FG")
   end
 
 end
+
 
