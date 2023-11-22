@@ -10,6 +10,7 @@ class Checkout
   end
 
   def checkout(items)
+    puts "Checking out items: #{items}"
     return -1 unless items.is_a?(String)
 
     total_price = 0
@@ -82,8 +83,3 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
-
-
-
-
-
