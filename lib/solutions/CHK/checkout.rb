@@ -34,11 +34,21 @@ class Checkout
 
     if price_info[:special_offer]
       special_offer = price_info[:special_offer]
-      special_price_quantity = count / special_offer[:quantity]
-      regular_price_quantity = count % special_offer[:quantity]
-      (special_price_quantity * special_offer[:offer_price]) + (regular_price_quantity * price_info[:price])
+      if special_offer[:free_item]
+        special_price_quantity = count / special_offer[:quantity]
+        regular_price_quantity = count % special_offer[:quantity]
+        free_item_count = [item_counts[special_offer[:free_item]], special_price_quantity].min
+        total_price += (special_price_quantity * price_info[:price]) +
+          (regular_price_quantity * price_info[:price]) -
+          (free_item_count * @price_table[special_offer[:free_item]][:price])
+      else
+        special_price_quantity = count / special_offer[:quantity]
+        regular_price_quantity = count % special_offer[:quantity]
+        (special_price_quantity * special_offer[:offer_price]) + (regular_price_quantity * price_info[:price])
+      end
     else
       count * price_info[:price]
     end
   end
 end
+
