@@ -38,6 +38,7 @@ class Checkout
     if price_info[:special_offer]
       special_offer = price_info[:special_offer]
       if special_offer[:free_item]
+        puts "special_offer[:free_item]: #{special_offer[:free_item]}"
         # This represents the number of times the special offer is applied.
         special_price_quantity = count / special_offer[:quantity]
         puts "special_price_quantity: #{special_price_quantity}"
@@ -49,9 +50,13 @@ class Checkout
         free_item_count = [item_counts[special_offer[:free_item]], special_price_quantity].min
         puts "free_item_count: #{free_item_count}"
 
-        puts special_price_quantity
-        puts special_offer
-        puts special_offer.dig(:free_item)
+        puts "special_price_quantity: #{special_price_quantity}"
+        puts special_offer[:free]
+        puts "special_offer[:offer_price]: #{special_offer.dig(:offer_price)}"
+
+        puts "special_price_quantity * special_offer[:offer_price]: #{special_price_quantity * special_offer.dig(:offer_price)}"
+        puts "regular_price_quantity * price_info[:price]: #{regular_price_quantity * price_info.dig(:price)}"
+        puts "free_item_count * @price_table[special_offer[:free_item]][:price]: #{free_item_count * @price_table[special_offer[:free_item]][:price]}"
 
         total_price += (special_price_quantity * special_offer.dig(:offer_price)) +
           (regular_price_quantity * price_info.dig(:price)) +
@@ -69,6 +74,7 @@ class Checkout
     end
   end
 end
+
 
 
 
