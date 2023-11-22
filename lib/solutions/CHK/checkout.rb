@@ -48,7 +48,6 @@ class Checkout
         total_price += (special_price_quantity * special_offer[:offer_price]) +
           (regular_price_quantity * price_info[:price]) -
           (free_item_count * @price_table[special_offer[:free_item]][:price])
-
       else
         # This represents the number of times the special offer is applied.
         special_price_quantity = count / special_offer[:quantity]
@@ -62,8 +61,3 @@ class Checkout
     end
   end
 end
-
-
-
-
-
