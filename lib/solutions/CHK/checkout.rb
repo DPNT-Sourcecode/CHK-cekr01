@@ -48,10 +48,3 @@ class Checkout
 
   private
 end
-
-
-
-
-
-
-
