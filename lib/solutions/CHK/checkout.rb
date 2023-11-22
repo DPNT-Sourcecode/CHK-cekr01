@@ -2,7 +2,10 @@
 class Checkout
 
   def checkout(skus)
-    raise 'Not implemented'
+    -1 if skus.nil?
+
+
   end
 
 end
+
