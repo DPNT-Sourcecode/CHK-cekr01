@@ -38,7 +38,6 @@ class Checkout
     if price_info[:special_offer]
       special_offer = price_info[:special_offer]
       if special_offer[:free_item]
-
         # This represents the number of times the special offer is applied.
         special_price_quantity = count / special_offer[:quantity]
         # This represents the remaining items that are not covered by the special offer.
@@ -61,6 +60,7 @@ class Checkout
     end
   end
 end
+
 
 
 

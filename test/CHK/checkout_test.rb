@@ -13,6 +13,8 @@ class ClientTest < Minitest::Test
 
     # Test case 1: Normal pricing
     assert_equal 50, checkout.checkout("A")
+    assert_equal 40, checkout.checkout("E")
+    assert_equal 80, checkout.checkout("EE")
     assert_equal 115, checkout.checkout("ABCD")
 
     # Test case 2: Special offers
@@ -23,9 +25,11 @@ class ClientTest < Minitest::Test
     assert_equal 175, checkout.checkout("AAABB")
     assert_equal 190, checkout.checkout("AAABBD")
     assert_equal 80, checkout.checkout("EEB")
+    assert_equal 110, checkout.checkout("EEBB")
 
     # Test case 4: Illegal input
     assert_equal -1, checkout.checkout("FG")
   end
 
 end
+
