@@ -14,7 +14,6 @@ class Checkout
     return -1 unless items.is_a?(String)
 
     total_price = 0
-    item_counts = Hash.new(0)
 
     items.each_char do |item|
       return -1 unless @price_table.key?(item)
