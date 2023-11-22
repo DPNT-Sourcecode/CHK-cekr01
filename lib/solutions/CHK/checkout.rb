@@ -2,17 +2,22 @@ class Checkout
 
   def initialize
     @price_table = {
-      'A' => { price: 50, special_offer: { quantity: 3, offer_price: 130 } },
-      'B' => { price: 30, special_offer: { quantity: 2, offer_price: 45 } },
+      'A' => { price: 50, },
+      'B' => { price: 30 },
       'C' => { price: 20 },
       'D' => { price: 15 },
-      'E' => { price: 40, special_offer: { quantity: 2, free_item: 'B' } }
+      'E' => { price: 40 },
     }
 
-    #
     @discount_types = {
       :offer_price => { priority: 1 },
       :free_item => { priority: 2 }
+    }
+
+    @product_discounts = {
+      'A' => { quantity: 3, offer_price: 130 },
+      'B' => { quantity: 2, offer_price: 45 },
+      'E' => { quantity: 2, free_item: 'B' }
     }
   end
 
@@ -27,7 +32,7 @@ class Checkout
       return -1 unless @price_table.key?(item)
 
       price_info = @price_table[item]
-      total_price += calculate_item_price(count, price_info, item_counts)
+      total_price += calculate_item_price(count, price_info, item)
     end
 
     total_price
@@ -35,29 +40,44 @@ class Checkout
 
   private
 
-  def calculate_item_price(count, price_info, item_counts)
+  def calculate_item_price(count, price_info, item)
     return -1 if count < 0
 
-    if price_info[:special_offer]
-      special_offer = price_info[:special_offer]
-      if special_offer[:free_item]
-        special_price_quantity = count / special_offer[:quantity]
-        regular_price_quantity = count % special_offer[:quantity]
-        free_item_count = [item_counts[special_offer[:free_item]], special_price_quantity].min
-        total_price += (special_price_quantity * price_info[:price]) +
-          (regular_price_quantity * price_info[:price]) -
-          (free_item_count * @price_table[special_offer[:free_item]][:price])
-      else
-        special_price_quantity = count / special_offer[:quantity]
-        regular_price_quantity = count % special_offer[:quantity]
-        total_price += (special_price_quantity * special_offer[:offer_price]) +
-          (regular_price_quantity * price_info[:price])
+    total_price = 0
+
+    if @product_discounts[item]
+      product_discount = @product_discounts[item]
+      discount_type = product_discount[:discount_type]
+
+      case discount_type
+      when :offer_price
+        total_price += apply_offer_price_discount(count, price_info, product_discount)
+      when :free_item
+        total_price += apply_free_item_discount(count, price_info, product_discount)
       end
     else
-      count * price_info[:price]
+      total_price += count * price_info[:price]
     end
+
+    total_price
+  end
+
+  def apply_offer_price_discount(count, price_info, product_discount)
+    special_price_quantity = count / product_discount[:quantity]
+    regular_price_quantity = count % product_discount[:quantity]
+    (special_price_quantity * price_info[:price]) + (regular_price_quantity * price_info[:price])
+  end
+
+  def apply_free_item_discount(count, price_info, product_discount)
+    special_price_quantity = count / product_discount[:quantity]
+    regular_price_quantity = count % product_discount[:quantity]
+    free_item_count = [item_counts[product_discount[:free_item]], special_price_quantity].min
+    (special_price_quantity * price_info[:price]) +
+      (regular_price_quantity * price_info[:price]) -
+      (free_item_count * @price_table[product_discount[:free_item]][:price])
   end
 end
+
 
 
 
