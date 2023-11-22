@@ -22,9 +22,11 @@ class ClientTest < Minitest::Test
     # Test case 3: Combination of normal pricing and special offers
     assert_equal 175, checkout.checkout("AAABB")
     assert_equal 190, checkout.checkout("AAABBD")
+    assert_equal 80, checkout.checkout("EEB")
 
     # Test case 4: Illegal input
     assert_equal -1, checkout.checkout("EFG")
   end
 
 end
+
