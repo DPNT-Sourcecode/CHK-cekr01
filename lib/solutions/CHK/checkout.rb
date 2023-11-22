@@ -1,11 +1,17 @@
 class Checkout
   def initialize
     @price_table = {
-      'A' => { price: 50, special_offer: { quantity: 3, offer_price: 130 } },
-      'B' => { price: 30, special_offer: { quantity: 2, offer_price: 45 } },
+      'A' => { price: 50 },
+      'B' => { price: 30 },
       'C' => { price: 20 },
       'D' => { price: 15 },
-      'E' => { price: 40, special_offer: { quantity: 2, offer_price: 80, free_item: 'B' } }
+      'E' => { price: 40 }
+    }
+
+    @discount_table = {
+      'A' => { type: :offer_price, quantity: 3, price: 130 },
+      'B' => { type: :offer_price, quantity: 2, price: 45 },
+      'E' => { type: :free_item, quantity: 2, free_item: 'B' }
     }
   end
 
@@ -31,25 +37,7 @@ class Checkout
   def calculate_item_price(count, price_info, item_counts)
     return -1 if count < 0
 
-    total_price = 0
-
-    if price_info[:special_offer]
-      special_offer = price_info[:special_offer]
-      special_price_quantity = count / special_offer[:quantity]
-      regular_price_quantity = count % special_offer[:quantity]
-
-      total_price += special_price_quantity * special_offer[:offer_price].to_i
-      total_price += regular_price_quantity * price_info[:price]
-
-      if special_offer[:free_item]
-        free_item_count = [item_counts[special_offer[:free_item]], special_price_quantity].min
-        total_price -= free_item_count * @price_table[special_offer[:free_item]][:price]
-      end
-    else
-      total_price += count * price_info[:price]
-    end
-
-    total_price
   end
 
 end
+
