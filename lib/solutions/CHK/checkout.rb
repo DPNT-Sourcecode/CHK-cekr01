@@ -48,26 +48,20 @@ class Checkout
   end
 
   def calculate_offer_price(count, item)
-    puts :offer_price, count, item
     offer_quantity = @discount_table[item][:quantity]
     offer_price = @discount_table[item][:price]
-    normal_price = count * @price_table[item][:price]
 
+    # Calculate the total price considering the offer price
     (count / offer_quantity) * offer_price + (count % offer_quantity) * @price_table[item][:price]
   end
 
   def calculate_free_item_price(count, item, item_counts)
-    puts :free_item, count, item
     free_item = @discount_table[item][:free_item]
     free_item_count = item_counts[free_item]
 
     # Calculate the total price considering the free item discount
-    count * @price_table[item][:price] - (free_item_count / @discount_table[item][:quantity]) * @price_table[free_item][:price]
+    discounted_count = count - (free_item_count / @discount_table[item][:quantity]) * @discount_table[item][:quantity]
+    discounted_count * @price_table[item][:price]
   end
 
 end
-
-
-
-
-
