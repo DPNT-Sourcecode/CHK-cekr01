@@ -33,6 +33,8 @@ class Checkout
   def calculate_item_price(count, price_info, item_counts)
     return -1 if count < 0
 
+    total_price = 0
+
     if price_info[:special_offer]
       special_offer = price_info[:special_offer]
       if special_offer[:free_item]
@@ -43,7 +45,7 @@ class Checkout
         regular_price_quantity = count % special_offer[:quantity]
         free_item_count = [item_counts[special_offer[:free_item]], special_price_quantity].min
 
-        total_price += (special_price_quantity * special_offer.dig(:offer_price).to_i)
+        total_price += (special_price_quantity * special_offer.dig(:offer_price).to_i || 0)
         total_price += (regular_price_quantity * price_info.dig(:price))
         total_price -= (free_item_count.to_i * @price_table[special_offer.dig(:free_item)].dig(:price))
       else
@@ -59,6 +61,7 @@ class Checkout
     end
   end
 end
+
 
 
 
