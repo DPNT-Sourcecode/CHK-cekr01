@@ -62,10 +62,13 @@ class Checkout
 
   def apply_special_offer(item, count, offer)
     if item == 'E' && offer[:free_item]
-      eligible_items = count - count % offer[:quantity]
-      free_items = [count / offer[:quantity], eligible_items / offer[:quantity]].min
-      remaining_items = count - eligible_items
-      return free_items * @price_table[offer[:free_item]][:price] + remaining_items * @price_table[item][:price]
+      free_item_count = [count / offer[:quantity], count].min
+      remaining_items = count - free_item_count
+
+      # Check for the presence of 'B' and remove it from the remaining items
+      remaining_items -= item_counts['B'] if remaining_items >= item_counts['B']
+
+      return free_item_count * @price_table[offer[:free_item]][:price] + remaining_items * @price_table[item][:price]
     end
 
     offer_batches = count / offer[:quantity]
@@ -74,6 +77,7 @@ class Checkout
     offer_batches * offer[:offer_price] + remaining_items * @price_table[item][:price]
   end
 end
+
 
 
 
