@@ -25,8 +25,7 @@ class Checkout
     item_counts.each do |item, count|
       return -1 unless @price_table.key?(item)
 
-      price_info = @price_table[item]
-      total_price += calculate_item_price(count, price_info, item_counts)
+      total_price += calculate_item_price(count, item, item_counts)
     end
 
     total_price
@@ -34,25 +33,36 @@ class Checkout
 
   private
 
-  def calculate_item_price(count, price_info, item_counts)
+  def calculate_item_price(count, item, item_counts)
     return -1 if count < 0
 
     case @discount_table[item][:type]
     when :offer_price
-      calculate_offer_price(count, price_info)
+      calculate_offer_price(count, item)
     when :free_item
-      calculate_free_item_price(count, price_info, item_counts)
+      calculate_free_item_price(count, item, item_counts)
     else
-      calculate_normal_price(count, price_info)
+      count * item[:price]
     end
   end
 
   def calculate_offer_price(count, price_info)
-    quantity = @discount_table[item][:quantity]
+    offer_quantity = @discount_table[item][:quantity]
     offer_price = @discount_table[item][:price]
-    normal_price = price_info[:price]
+    normal_price = count * price_info[:price]
+
+    (count / offer_quantity) * offer_price + (count % offer_quantity) * price_info[:price]
+  end
+
+  def calculate_free_item_price(count, price_info, item_counts)
+    free_item = @discount_table[item][:free_item]
+    free_item_count = item_counts[free_item]
+
+    # Calculate the total price considering the free item discount
+    count * price_info[:price] - (free_item_count / @discount_table[item][:quantity]) * @price_table[free_item][:price]
   end
 
 end
+
 
 
