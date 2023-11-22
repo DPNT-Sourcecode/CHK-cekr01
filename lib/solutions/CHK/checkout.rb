@@ -60,8 +60,7 @@ class Checkout
     free_item_count = item_counts[free_item]
 
     # Calculate the total price considering the free item discount
-    discounted_count = count - (free_item_count / @discount_table[item][:quantity]) * @discount_table[item][:quantity]
-    discounted_count * @price_table[item][:price]
+    count * @price_table[item][:price] - (free_item_count / @discount_table[item][:quantity]) * @price_table[free_item][:price]
   end
-
 end
+
