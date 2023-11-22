@@ -37,7 +37,22 @@ class Checkout
   def calculate_item_price(count, price_info, item_counts)
     return -1 if count < 0
 
+    case @discount_table[item][:type]
+    when :offer_price
+      calculate_offer_price(count, price_info)
+    when :free_item
+      calculate_free_item_price(count, price_info, item_counts)
+    else
+      calculate_normal_price(count, price_info)
+    end
+  end
+
+  def calculate_offer_price(count, price_info)
+    quantity = @discount_table[item][:quantity]
+    offer_price = @discount_table[item][:price]
+    normal_price = price_info[:price]
   end
 
 end
+
 
