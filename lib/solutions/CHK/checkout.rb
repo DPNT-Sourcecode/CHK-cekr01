@@ -63,7 +63,6 @@ class Checkout
   end
 
   def checkout(items)
-    puts "Checking out items: #{items}"
     return -1 unless items.is_a?(String)
 
     total_price = 0
@@ -90,6 +89,7 @@ class Checkout
   def calculate_item_price(item, count)
     puts item
     price_info = @price_table[item]
+    puts price_info
     special_offers = price_info[:special_offers]
 
     # If there are special offers, apply them
@@ -152,21 +152,19 @@ class Checkout
 
       keys_in_group = item_counts.select { |item, count| count.positive? && group_items.include?(item) }
       values_count = keys_in_group.values.sum
-      puts values_count
 
       if values_count >= min_quantity
-        puts "Applying discount for group #{group_items}"
         # order the items by price
         items_in_group = keys_in_group.map { |item| { item: item, price: info[:price] } }.sort_by { |item| item[:price]}.reverse
 
         # apply discount to min_quantity items
+        puts "Item counts: #{item_counts}"
         items_in_group[0, min_quantity].each { |item| item_counts[item[:item]] -= 1 }
 
         total_price += offer_price_for_group
       end
     end
 
-    puts total_price
     total_price
   end
 
@@ -175,3 +173,4 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
+
