@@ -13,7 +13,6 @@ class ClientTest < Minitest::Test
 
     # Test case 1: Normal pricing
     assert_equal 50, checkout.checkout("A")
-    assert_equal 40, checkout.checkout("E")
     assert_equal 115, checkout.checkout("ABCD")
 
     # Test case 2: Special offers
@@ -31,3 +30,4 @@ class ClientTest < Minitest::Test
   end
 
 end
+

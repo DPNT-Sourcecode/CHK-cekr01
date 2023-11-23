@@ -2,10 +2,10 @@ class Checkout
   def initialize
     @price_table = {
       'A' => { price: 50, special_offers: [{ quantity: 3, offer_price: 130 }, { quantity: 5, offer_price: 200 }] },
-      'B' => { price: 30, special_offer: { quantity: 2, offer_price: 45 } },
+      'B' => { price: 30, special_offers: [{ quantity: 2, offer_price: 45 }] },
       'C' => { price: 20 },
       'D' => { price: 15 },
-      'E' => { price: 40, special_offer: { quantity: 2, free_item: 'B' } }
+      'E' => { price: 40, special_offers: [{ quantity: 2, free_item: 'B' }] }
     }
   end
 
@@ -17,14 +17,20 @@ class Checkout
 
     items.each_char do |item|
       return -1 unless @price_table.key?(item)
-
       item_counts[item] += 1
     end
+
+    puts "Item counts: #{item_counts}"
+
+    puts 'Applying free items discount'
+    apply_free_items_discount
+    puts "Item counts after free items discount: #{item_counts}"
 
     item_counts.each do |item, count|
       total_price += calculate_item_price(item, count)
     end
 
+    # item_counts.clear
     total_price
   end
 
@@ -33,48 +39,41 @@ class Checkout
   def calculate_item_price(item, count)
     price_info = @price_table[item]
     special_offers = price_info[:special_offers]
-    special_offer = price_info[:special_offer]
 
+    # If there are special offers, apply them
     if special_offers
-      total_price = apply_multi_price_offers(item, count, special_offers)
-    elsif special_offer
-      total_price = apply_special_offer(item, count, special_offer)
+      apply_offers(item, count, special_offers)
     else
-      total_price = count * price_info[:price]
+      count * price_info[:price]
     end
-
-    total_price
   end
 
-  def apply_multi_price_offers(item, count, offers)
+  def apply_offers(item, count, offers)
     total_price = 0
 
-    offers.sort_by { |offer| -offer[:quantity] }.each do |offer|
-      offer_batches = count / offer[:quantity]
-      remaining_items = count % offer[:quantity]
+    # Apply buy X get discount
+    # higher quantity offers are applied first
+    offers.sort_by { |offer| offer[:quantity] }.reverse.each do |offer|
+      next if offer[:offer_price].nil?
+      quantity = offer[:quantity]
+      offer_price = offer[:offer_price]
 
-      total_price += offer_batches * offer[:offer_price]
-      count = remaining_items
+      while count >= quantity
+        total_price += offer_price
+        count -= quantity
+      end
     end
 
-    total_price + count * @price_table[item][:price]
+    # Apply remaining items
+    total_price += count * @price_table[item][:price]
   end
 
-  def apply_special_offer(item, count, offer)
-    if item == 'E' && offer[:free_item]
-      free_item_count = [count / offer[:quantity], count].min
-      remaining_items = count - free_item_count
-
-      # Check for the presence of 'B' and remove it from the remaining items
-      remaining_items -= item_counts['B'] if remaining_items >= item_counts['B']
-
-      return free_item_count * @price_table[offer[:free_item]][:price] + remaining_items * @price_table[item][:price]
+  def apply_free_items_discount
+    # Check for free items
+    # If there are 2 or more 'E' items, then 1 'B' item is free
+    if item_counts['E'] >= 2
+      item_counts['B'] -= 1
     end
-
-    offer_batches = count / offer[:quantity]
-    remaining_items = count % offer[:quantity]
-
-    offer_batches * offer[:offer_price] + remaining_items * @price_table[item][:price]
   end
 
   # Helper method to get the count of each item in the checkout
