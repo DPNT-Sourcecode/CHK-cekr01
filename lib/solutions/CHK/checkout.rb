@@ -91,6 +91,3 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
-
-
-
