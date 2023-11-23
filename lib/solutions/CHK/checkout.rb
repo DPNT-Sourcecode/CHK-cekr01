@@ -43,7 +43,7 @@ class Checkout
       'H' => { price: 10, special_offers: [{ quantity: 5, offer_price: 45 }, { quantity: 10, offer_price: 80 }] },
       'I' => { price: 35 },
       'J' => { price: 60 },
-      'K' => { price: 80, special_offers: [{ quantity: 2, offer_price: 150 }] },
+      'K' => { price: 70, special_offers: [{ quantity: 2, offer_price: 120 }] },
       'L' => { price: 90 },
       'M' => { price: 15 },
       'N' => { price: 40, special_offers: [{ quantity: 3, free_item: 'M' }] },
@@ -51,14 +51,14 @@ class Checkout
       'P' => { price: 50, special_offers: [{ quantity: 5, offer_price: 200 }] },
       'Q' => { price: 30, special_offers: [{ quantity: 3, offer_price: 80 }] },
       'R' => { price: 50, special_offers: [{ quantity: 3, free_item: 'Q' }] },
-      'S' => { price: 30 },
-      'T' => { price: 20 },
-      'U' => { price: 40, special_offers: [{ quantity: 4, free_item: 'U' }] }, # 3 dont work? something wrong with the server tests or with the round 4 assignment?
+      'S' => { price: 20, group_discount: { items: %w[S T X Y Z], quantity: 3, offer_price: 45 } },
+      'T' => { price: 20, group_discount: { items: %w[S T X Y Z], quantity: 3, offer_price: 45 } },
+      'U' => { price: 40, special_offers: [{ quantity: 4, free_item: 'U' }] },
       'V' => { price: 50, special_offers: [{ quantity: 2, offer_price: 90 }, { quantity: 3, offer_price: 130 }] },
       'W' => { price: 20 },
-      'X' => { price: 90 },
-      'Y' => { price: 10 },
-      'Z' => { price: 50 }
+      'X' => { price: 17, group_discount: { items: %w[S T X Y Z], quantity: 3, offer_price: 45 } },
+      'Y' => { price: 20, group_discount: { items: %w[S T X Y Z], quantity: 3, offer_price: 45 } },
+      'Z' => { price: 21, group_discount: { items: %w[S T X Y Z], quantity: 3, offer_price: 45 } }
     }
   end
 
@@ -78,6 +78,10 @@ class Checkout
     puts 'Applying free items discount'
     apply_free_items_discount
     puts "Item counts after free items discount: #{item_counts}"
+
+    puts 'Applying group discount'
+    total_price += apply_group_discount
+    puts "Item counts after group discount: #{item_counts}"
 
     item_counts.each do |item, count|
       total_price += calculate_item_price(item, count)
@@ -136,7 +140,35 @@ class Checkout
         end
       end
     end
+  end
 
+  def apply_group_discount
+    total_price = 0
+
+    @price_table.select { |item, info| info[:group_discount] }.each do |item, info|
+      group_discount = info[:group_discount]
+      group_items = group_discount[:items]
+      min_quantity = group_discount[:quantity]
+      offer_price_for_group = group_discount[:offer_price]
+
+      # items_counts is a hash with multiple items as keys and their counts
+      # if the hash contains at least 3 keys from group_items
+      # apply discount and remove items from item_counts
+
+      keys_in_group = item_counts.select { |item, count| count.positive? && group_items.include?(item) }.keys
+
+      if keys_in_group.size >= min_quantity
+        # order the items by price
+        items_in_group = keys_in_group.map { |item| { item: item, price: @price_table[item][:price] } }.sort_by { |item| item[:price] }.reverse
+
+        # apply discount to min_quantity items
+        items_in_group[0, min_quantity].each { |item| item_counts[item[:item]] -= 1 }
+
+        total_price += offer_price_for_group
+      end
+    end
+
+    total_price
   end
 
   # Helper method to get the count of each item in the checkout
