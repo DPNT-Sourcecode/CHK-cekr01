@@ -76,6 +76,7 @@ class Checkout
 
     total_price += apply_group_discount
 
+    puts item_counts
     item_counts.each do |item, count|
       total_price += calculate_item_price(item, count)
     end
@@ -128,6 +129,7 @@ class Checkout
         free_item = info[:special_offers][0][:free_item]
         quantity_required = info[:special_offers][0][:quantity]
 
+        puts "ITEM: #{item}"
         if item_counts[item] >= quantity_required
           free_items = item_counts[item] / quantity_required
           item_counts[free_item] -= free_items
@@ -173,4 +175,5 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
+
 
