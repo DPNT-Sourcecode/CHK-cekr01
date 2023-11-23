@@ -136,6 +136,28 @@ class Checkout
       item_counts['F'] -= free_items
       item_counts['F'] = 0 if item_counts['F'] < 0
     end
+
+    # For each 3 'N' items, 1 'M' item is free
+    if item_counts['N'] >= 3
+      free_items = item_counts['N'] / 3
+      item_counts['M'] -= free_items
+      item_counts['M'] = 0 if item_counts['M'] < 0
+    end
+
+    # For each 3 'R' items, 1 'Q' item is free
+    if item_counts['R'] >= 3
+      free_items = item_counts['R'] / 3
+      item_counts['Q'] -= free_items
+      item_counts['Q'] = 0 if item_counts['Q'] < 0
+    end
+
+    # For each 3 'U' items, 1 'U' item is free
+    if item_counts['U'] >= 3
+      free_items = item_counts['U'] / 3
+      item_counts['U'] -= free_items
+      item_counts['U'] = 0 if item_counts['U'] < 0
+    end
+
   end
 
   # Helper method to get the count of each item in the checkout
@@ -143,3 +165,4 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
+
