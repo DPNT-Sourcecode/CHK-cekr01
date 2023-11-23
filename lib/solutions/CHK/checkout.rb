@@ -53,7 +53,7 @@ class Checkout
       'R' => { price: 50, special_offers: [{ quantity: 3, free_item: 'Q' }] },
       'S' => { price: 30 },
       'T' => { price: 20 },
-      'U' => { price: 40, special_offers: [{ quantity: 2, free_item: 'U' }] }, # 3 dont work? something wrong with the server tests or with the round 4 assignment?
+      'U' => { price: 40, special_offers: [{ quantity: 4, free_item: 'U' }] }, # 3 dont work? something wrong with the server tests or with the round 4 assignment?
       'V' => { price: 50, special_offers: [{ quantity: 2, offer_price: 90 }, { quantity: 3, offer_price: 130 }] },
       'W' => { price: 20 },
       'X' => { price: 90 },
@@ -144,9 +144,3 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
-
-
-
-
-
-
