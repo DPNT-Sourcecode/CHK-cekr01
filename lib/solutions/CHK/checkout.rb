@@ -122,41 +122,48 @@ class Checkout
   end
 
   def apply_free_items_discount
-    # Check for free items
-    # For each 2 'E' items, 1 'B' item is free
-    if item_counts['E'] >= 2
-      free_items = item_counts['E'] / 2
-      item_counts['B'] -= free_items
-      item_counts['B'] = 0 if item_counts['B'] < 0
+
+    @price_table.each do |item, info|
+      special_offers = info[:special_offers]
+
+      if special_offers && info
     end
 
-    # For each 3 'F' items, 1 'F' item is free
-    if item_counts['F'] >= 3
-      free_items = item_counts['F'] / 3
-      item_counts['F'] -= free_items
-      item_counts['F'] = 0 if item_counts['F'] < 0
-    end
-
-    # For each 3 'N' items, 1 'M' item is free
-    if item_counts['N'] >= 3
-      free_items = item_counts['N'] / 3
-      item_counts['M'] -= free_items
-      item_counts['M'] = 0 if item_counts['M'] < 0
-    end
-
-    # For each 3 'R' items, 1 'Q' item is free
-    if item_counts['R'] >= 3
-      free_items = item_counts['R'] / 3
-      item_counts['Q'] -= free_items
-      item_counts['Q'] = 0 if item_counts['Q'] < 0
-    end
-
-    # For each 3 'U' items, 1 'U' item is free
-    if item_counts['U'] >= 3
-      free_items = item_counts['U'] / 3
-      item_counts['U'] -= free_items
-      item_counts['U'] = 0 if item_counts['U'] < 0
-    end
+    # # Check for free items
+    # # For each 2 'E' items, 1 'B' item is free
+    # if item_counts['E'] >= 2
+    #   free_items = item_counts['E'] / 2
+    #   item_counts['B'] -= free_items
+    #   item_counts['B'] = 0 if item_counts['B'] < 0
+    # end
+    #
+    # # For each 3 'F' items, 1 'F' item is free
+    # if item_counts['F'] >= 3
+    #   free_items = item_counts['F'] / 3
+    #   item_counts['F'] -= free_items
+    #   item_counts['F'] = 0 if item_counts['F'] < 0
+    # end
+    #
+    # # For each 3 'N' items, 1 'M' item is free
+    # if item_counts['N'] >= 3
+    #   free_items = item_counts['N'] / 3
+    #   item_counts['M'] -= free_items
+    #   item_counts['M'] = 0 if item_counts['M'] < 0
+    # end
+    #
+    # # For each 3 'R' items, 1 'Q' item is free
+    # if item_counts['R'] >= 3
+    #   free_items = item_counts['R'] / 3
+    #   item_counts['Q'] -= free_items
+    #   item_counts['Q'] = 0 if item_counts['Q'] < 0
+    # end
+    #
+    # # For each 3 'U' items, 1 'U' item is free
+    # if item_counts['U'] >= 3
+    #   free_items = item_counts['U'] / 3
+    #   item_counts['U'] -= free_items
+    #   item_counts['U'] = 0 if item_counts['U'] < 0
+    # end
 
   end
 
@@ -165,4 +172,5 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
+
 
