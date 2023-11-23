@@ -72,7 +72,7 @@ class Checkout
       item_counts[item] += 1
     end
 
-    apply_free_items_discount
+    # apply_free_items_discount
 
     total_price += apply_group_discount
 
@@ -175,5 +175,6 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
+
 
 
