@@ -70,9 +70,11 @@ class Checkout
 
   def apply_free_items_discount
     # Check for free items
-    # If there are 2 or more 'E' items, then 1 'B' item is free
+    # For each 2 'E' items, 1 'B' item is free
     if item_counts['E'] >= 2
-      item_counts['B'] -= 1
+      free_items = item_counts['E'] / 2
+      item_counts['B'] -= free_items
+      item_counts['B'] = 0 if item_counts['B'] < 0
     end
   end
 
@@ -81,4 +83,5 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
+
 
