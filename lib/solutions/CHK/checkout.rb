@@ -155,9 +155,10 @@ class Checkout
       # if the hash contains at least 3 keys from group_items
       # apply discount and remove items from item_counts
 
-      keys_in_group = item_counts.select { |item, count| count.positive? && group_items.include?(item) }.keys
+      keys_in_group = item_counts.select { |item, count| count.positive? && group_items.include?(item) }
+      values_count = keys_in_group.values.sum
 
-      if keys_in_group.size >= min_quantity
+      if values_count.size >= min_quantity
         # order the items by price
         items_in_group = keys_in_group.map { |item| { item: item, price: @price_table[item][:price] } }.sort_by { |item| item[:price] }.reverse
 
@@ -176,3 +177,4 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
+
