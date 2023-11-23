@@ -30,7 +30,7 @@ class Checkout
       total_price += calculate_item_price(item, count)
     end
 
-    # item_counts.clear
+    item_counts.clear
     total_price
   end
 
@@ -81,3 +81,4 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
+
