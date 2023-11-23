@@ -156,9 +156,14 @@ class Checkout
       # apply discount and remove items from item_counts
 
       keys_in_group = item_counts.select { |item, count| count.positive? && group_items.include?(item) }
+      puts "Keys in group: #{keys_in_group}"
       values_count = keys_in_group.values.sum
+      puts "Values count: #{values_count}"
+
+      puts "Min quantity: #{min_quantity}"
 
       if values_count.size >= min_quantity
+        puts "Applying discount for group #{group_items}"
         # order the items by price
         items_in_group = keys_in_group.map { |item| { item: item, price: @price_table[item][:price] } }.sort_by { |item| item[:price] }.reverse
 
@@ -169,6 +174,7 @@ class Checkout
       end
     end
 
+    puts total_price
     total_price
   end
 
@@ -177,4 +183,3 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
-
