@@ -5,7 +5,8 @@ class Checkout
       'B' => { price: 30, special_offers: [{ quantity: 2, offer_price: 45 }] },
       'C' => { price: 20 },
       'D' => { price: 15 },
-      'E' => { price: 40, special_offers: [{ quantity: 2, free_item: 'B' }] }
+      'E' => { price: 40, special_offers: [{ quantity: 2, free_item: 'B' }] },
+      'F' => { price: 10, special_offers: [{ quantity: 3, free_item: 'F' }] }
     }
   end
 
@@ -76,6 +77,13 @@ class Checkout
       item_counts['B'] -= free_items
       item_counts['B'] = 0 if item_counts['B'] < 0
     end
+
+    # For each 3 'F' items, 1 'F' item is free
+    if item_counts['F'] >= 3
+      free_items = item_counts['F'] / 3
+      item_counts['F'] -= free_items
+      item_counts['F'] = 0 if item_counts['F'] < 0
+    end
   end
 
   # Helper method to get the count of each item in the checkout
@@ -83,5 +91,6 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
+
 
 
