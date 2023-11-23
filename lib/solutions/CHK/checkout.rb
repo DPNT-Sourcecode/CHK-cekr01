@@ -72,11 +72,10 @@ class Checkout
       item_counts[item] += 1
     end
 
-    # apply_free_items_discount
+    apply_free_items_discount
 
     total_price += apply_group_discount
 
-    puts item_counts
     item_counts.each do |item, count|
       total_price += calculate_item_price(item, count)
     end
@@ -88,9 +87,7 @@ class Checkout
   private
 
   def calculate_item_price(item, count)
-    puts item
     price_info = @price_table[item]
-    puts price_info
     special_offers = price_info[:special_offers]
 
     # If there are special offers, apply them
@@ -129,7 +126,6 @@ class Checkout
         free_item = info[:special_offers][0][:free_item]
         quantity_required = info[:special_offers][0][:quantity]
 
-        puts "ITEM: #{item}"
         if item_counts[item] >= quantity_required
           free_items = item_counts[item] / quantity_required
           item_counts[free_item] -= free_items
@@ -144,27 +140,39 @@ class Checkout
 
     @price_table.select { |item, info| info[:group_discount] }.each do |item, info|
       group_discount = info[:group_discount]
+
+      next if group_discount.nil?
+
       group_items = group_discount[:items]
       min_quantity = group_discount[:quantity]
       offer_price_for_group = group_discount[:offer_price]
 
-      # items_counts is a hash with multiple items as keys and their counts
-      # if the hash contains at least 3 keys from group_items
-      # apply discount and remove items from item_counts
+      # Find eligible items for the group discount
+      eligible_items = group_items.select { |group_item| item_counts[group_item].to_i > 0 }
 
-      keys_in_group = item_counts.select { |item, count| count.positive? && group_items.include?(item) }
-      values_count = keys_in_group.values.sum
+      break if eligible_items.empty?
 
-      if values_count >= min_quantity
-        # order the items by price
-        items_in_group = keys_in_group.map { |item| { item: item, price: info[:price] } }.sort_by { |item| item[:price]}.reverse
+      # Sort eligible items by price in descending order
+      eligible_items.sort_by! { |group_item| -@price_table[group_item][:price] }
 
-        # apply discount to min_quantity items
-        puts "Item counts: #{item_counts}"
-        items_in_group[0, min_quantity].each { |item| item_counts[item[:item]] -= 1 }
+      eligible_items_quantity = eligible_items.sum { |group_item| item_counts[group_item] }
 
-        total_price += offer_price_for_group
+      max_discounts = eligible_items_quantity / min_quantity
+
+      max_discounts.times do
+        aux = 0
+        (max_discounts * min_quantity).times do
+          aux += 1
+          eligible_items.each do |group_item|
+            if item_counts[group_item] > 0
+              item_counts[group_item] -= 1
+              break
+            end
+          end
+        end
       end
+
+      total_price += max_discounts * offer_price_for_group
     end
 
     total_price
