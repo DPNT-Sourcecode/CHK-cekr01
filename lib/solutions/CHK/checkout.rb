@@ -73,15 +73,9 @@ class Checkout
       item_counts[item] += 1
     end
 
-    puts "Item counts: #{item_counts}"
-
-    puts 'Applying free items discount'
     apply_free_items_discount
-    puts "Item counts after free items discount: #{item_counts}"
 
-    puts 'Applying group discount'
     total_price += apply_group_discount
-    puts "Item counts after group discount: #{item_counts}"
 
     item_counts.each do |item, count|
       total_price += calculate_item_price(item, count)
@@ -94,6 +88,7 @@ class Checkout
   private
 
   def calculate_item_price(item, count)
+    puts item
     price_info = @price_table[item]
     special_offers = price_info[:special_offers]
 
@@ -156,16 +151,13 @@ class Checkout
       # apply discount and remove items from item_counts
 
       keys_in_group = item_counts.select { |item, count| count.positive? && group_items.include?(item) }
-      puts "Keys in group: #{keys_in_group}"
       values_count = keys_in_group.values.sum
-      puts "Values count: #{values_count}"
+      puts values_count
 
-      puts "Min quantity: #{min_quantity}"
-
-      if values_count.size >= min_quantity
+      if values_count >= min_quantity
         puts "Applying discount for group #{group_items}"
         # order the items by price
-        items_in_group = keys_in_group.map { |item| { item: item, price: @price_table[item][:price] } }.sort_by { |item| item[:price] }.reverse
+        items_in_group = keys_in_group.map { |item| { item: item, price: info[:price] } }.sort_by { |item| item[:price]}.reverse
 
         # apply discount to min_quantity items
         items_in_group[0, min_quantity].each { |item| item_counts[item[:item]] -= 1 }
