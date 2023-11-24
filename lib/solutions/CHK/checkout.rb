@@ -132,16 +132,12 @@ class Checkout
       puts "Max discounts: #{max_discounts}"
 
       puts eligible_items
-      max_discounts.times do
-        aux = 0
-        (max_discounts * min_quantity).times do
-          aux += 1
-          eligible_items.each do |group_item|
-            if item_counts[group_item] > 0
-              item_counts[group_item] -= 1
-              puts "Removed #{group_item} from eligible items"
-              break
-            end
+      (max_discounts * min_quantity).times do
+        eligible_items.each do |group_item|
+          if item_counts[group_item] > 0
+            item_counts[group_item] -= 1
+            puts "Removed #{group_item} from eligible items"
+            break
           end
         end
       end
@@ -159,6 +155,3 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
-
-
-
