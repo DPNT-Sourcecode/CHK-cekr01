@@ -53,7 +53,7 @@ class Checkout
       'R' => { price: 50, special_offers: [{ quantity: 3, free_item: 'Q' }] },
       'S' => { price: 20, group_discount: { items: %w[S T X Y Z], quantity: 3, offer_price: 45 } },
       'T' => { price: 20, group_discount: { items: %w[S T X Y Z], quantity: 3, offer_price: 45 } },
-      'U' => { price: 40, special_offers: [{ quantity: 3, free_item: 'U' }] },
+      'U' => { price: 40, special_offers: [{ quantity: 4, free_item: 'U' }] },
       'V' => { price: 50, special_offers: [{ quantity: 2, offer_price: 90 }, { quantity: 3, offer_price: 130 }] },
       'W' => { price: 20 },
       'X' => { price: 17, group_discount: { items: %w[S T X Y Z], quantity: 3, offer_price: 45 } },
@@ -183,4 +183,5 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
+
 
