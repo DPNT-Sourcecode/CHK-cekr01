@@ -31,9 +31,9 @@ class ClientTest < Minitest::Test
     assert_equal 160, checkout.checkout("EEEEBB")
     assert_equal 160, checkout.checkout("BEBEEE")
 
-    assert_equal 120, checkout.checkout("UUU")
     assert_equal 120, checkout.checkout("UUUU")
     assert_equal 160, checkout.checkout("UUUUU")
+    assert_equal 240, checkout.checkout("UUUUUUUU")
 
 
     assert_equal 45, checkout.checkout("STY")
@@ -46,3 +46,4 @@ class ClientTest < Minitest::Test
   end
 
 end
+
