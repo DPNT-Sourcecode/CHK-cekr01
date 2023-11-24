@@ -1,37 +1,5 @@
 class Checkout
   def initialize
-    ##
-    # +------+-------+------------------------+
-    # | Item | Price | Special offers         |
-    # +------+-------+------------------------+
-    # | A    | 50    | 3A for 130, 5A for 200 |
-    # | B    | 30    | 2B for 45              |
-    # | C    | 20    |                        |
-    # | D    | 15    |                        |
-    # | E    | 40    | 2E get one B free      |
-    # | F    | 10    | 2F get one F free      |
-    # | G    | 20    |                        |
-    # | H    | 10    | 5H for 45, 10H for 80  |
-    # | I    | 35    |                        |
-    # | J    | 60    |                        |
-    # | K    | 80    | 2K for 150             |
-    # | L    | 90    |                        |
-    # | M    | 15    |                        |
-    # | N    | 40    | 3N get one M free      |
-    # | O    | 10    |                        |
-    # | P    | 50    | 5P for 200             |
-    # | Q    | 30    | 3Q for 80              |
-    # | R    | 50    | 3R get one Q free      |
-    # | S    | 30    |                        |
-    # | T    | 20    |                        |
-    # | U    | 40    | 3U get one U free      |
-    # | V    | 50    | 2V for 90, 3V for 130  |
-    # | W    | 20    |                        |
-    # | X    | 90    |                        |
-    # | Y    | 10    |                        |
-    # | Z    | 50    |                        |
-    # +------+-------+------------------------+
-
     @price_table = {
       'A' => { price: 50, special_offers: [{ quantity: 3, offer_price: 130 }, { quantity: 5, offer_price: 200 }] },
       'B' => { price: 30, special_offers: [{ quantity: 2, offer_price: 45 }] },
@@ -63,6 +31,7 @@ class Checkout
   end
 
   def checkout(items)
+    puts "Items: #{items}"
     return -1 unless items.is_a?(String)
 
     total_price = 0
@@ -154,11 +123,15 @@ class Checkout
 
       # Sort eligible items by price in descending order
       eligible_items.sort_by! { |group_item| -@price_table[group_item][:price] }
+      puts "Sorted eligible items: #{eligible_items}"
 
       eligible_items_quantity = eligible_items.sum { |group_item| item_counts[group_item] }
+      puts "Eligible items quantity: #{eligible_items_quantity}"
 
       max_discounts = eligible_items_quantity / min_quantity
+      puts "Max discounts: #{max_discounts}"
 
+      puts eligible_items
       max_discounts.times do
         aux = 0
         (max_discounts * min_quantity).times do
@@ -166,11 +139,14 @@ class Checkout
           eligible_items.each do |group_item|
             if item_counts[group_item] > 0
               item_counts[group_item] -= 1
+              puts "Removed #{group_item} from eligible items"
               break
             end
           end
         end
       end
+
+      puts "Item counts after discount: #{item_counts}"
 
       total_price += max_discounts * offer_price_for_group
     end
@@ -183,5 +159,6 @@ class Checkout
     @item_counts ||= Hash.new(0)
   end
 end
+
 
 
