@@ -31,30 +31,41 @@ class Checkout
   end
 
   def checkout(items)
-    puts "Items: #{items}"
+    # -1 is returned if the input is invalid
     return -1 unless items.is_a?(String)
 
     total_price = 0
 
+    # Count the number of each item in the checkout
     items.each_char do |item|
       return -1 unless @price_table.key?(item)
       item_counts[item] += 1
     end
 
+    # Apply free items discount
     apply_free_items_discount
 
+    # Apply group discount
     total_price += apply_group_discount
 
+    # Calculate the total price
     item_counts.each do |item, count|
       total_price += calculate_item_price(item, count)
     end
 
+    # Clear the item counts
     item_counts.clear
+
+    # Return the total price
     total_price
   end
 
   private
 
+  ##
+  # Calculates the price of an item based on the count and special offers
+  # @param item [String] the item
+  # @param count [Integer] the number of items
   def calculate_item_price(item, count)
     price_info = @price_table[item]
     special_offers = price_info[:special_offers]
@@ -67,16 +78,23 @@ class Checkout
     end
   end
 
+  ##
+  # Applies special offers to an item
+  # @param item [String] the item
+  # @param count [Integer] the number of items
+  # @param offers [Array<Hash>] the special offers
   def apply_offers(item, count, offers)
     total_price = 0
 
     # Apply buy X get discount
     # higher quantity offers are applied first
     offers.sort_by { |offer| offer[:quantity] }.reverse.each do |offer|
+      # Skip if there is no offer price
       next if offer[:offer_price].nil?
       quantity = offer[:quantity]
       offer_price = offer[:offer_price]
 
+      # Apply the offer as many times as possible
       while count >= quantity
         total_price += offer_price
         count -= quantity
@@ -87,14 +105,20 @@ class Checkout
     total_price += count * @price_table[item][:price]
   end
 
+  ##
+  # Applies the free items discount
+  # @return [void]
   def apply_free_items_discount
     @price_table.each do |item, info|
       special_offers = info[:special_offers]
 
+      # Skip if there is no free item
       if special_offers && info[:special_offers][0][:free_item]
+        # Get the free item and the quantity required for the offer
         free_item = info[:special_offers][0][:free_item]
         quantity_required = info[:special_offers][0][:quantity]
 
+        # Apply the offer as many times as possible
         if item_counts[item] >= quantity_required
           free_items = item_counts[item] / quantity_required
           item_counts[free_item] -= free_items
@@ -104,14 +128,20 @@ class Checkout
     end
   end
 
+  ##
+  # Applies the group discount
+  # @return [Integer] the total price of the group discount
   def apply_group_discount
     total_price = 0
 
+    # Apply group discount for each item that has a group discount
     @price_table.select { |item, info| info[:group_discount] }.each do |item, info|
       group_discount = info[:group_discount]
 
+      # Skip if there is no group discount
       next if group_discount.nil?
 
+      # Get the group items, the minimum quantity required for the offer, and the offer price
       group_items = group_discount[:items]
       min_quantity = group_discount[:quantity]
       offer_price_for_group = group_discount[:offer_price]
@@ -119,31 +149,30 @@ class Checkout
       # Find eligible items for the group discount
       eligible_items = group_items.select { |group_item| item_counts[group_item].to_i > 0 }
 
+      # Skip if there are no eligible items
       break if eligible_items.empty?
 
       # Sort eligible items by price in descending order
       eligible_items.sort_by! { |group_item| -@price_table[group_item][:price] }
-      puts "Sorted eligible items: #{eligible_items}"
 
+      # Apply the discount as many times as possible
       eligible_items_quantity = eligible_items.sum { |group_item| item_counts[group_item] }
-      puts "Eligible items quantity: #{eligible_items_quantity}"
 
+      # Calculate the maximum number of discounts that can be applied
       max_discounts = eligible_items_quantity / min_quantity
-      puts "Max discounts: #{max_discounts}"
 
-      puts eligible_items
+      # Remove the items that were used for the discount
       (max_discounts * min_quantity).times do
         eligible_items.each do |group_item|
           if item_counts[group_item] > 0
             item_counts[group_item] -= 1
-            puts "Removed #{group_item} from eligible items"
             break
           end
         end
       end
 
-      puts "Item counts after discount: #{item_counts}"
 
+      # Add the total price of the group discount to the total price
       total_price += max_discounts * offer_price_for_group
     end
 
